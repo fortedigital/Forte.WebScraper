@@ -94,10 +94,8 @@ namespace WebScraper
             if (pageObject.PageLinks.Count == 0)
                 return;
 
-            foreach (var pageLink in pageObject.PageLinks)
+            foreach (var (linkName, selector) in pageObject.PageLinks.Select(x => (x.Key, x.Value)))
             {
-                pageLink.Deconstruct(out var linkName, out var selector);
-                
                 var links = document.QuerySelectorAll(selector)
                     .Select(l => l.GetAttribute(AttributeNames.Href))
                     .Select(href => BuildUri(baseUrl, href))
@@ -113,10 +111,8 @@ namespace WebScraper
             if (pageObject.Properties.Count == 0)
                 return;
 
-            foreach (var property in pageObject.Properties)
+            foreach (var (propertyName, propertyObject) in pageObject.Properties.Select(x => (x.Key, x.Value)))
             {
-                property.Deconstruct(out var propertyName, out var propertyObject);
-                
                 var elements = document.QuerySelectorAll(propertyObject.Selector);
                 if(elements.Length == 0)
                     continue;

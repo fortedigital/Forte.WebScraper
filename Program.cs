@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using AngleSharp;
-using AngleSharp.Css.Parser;
 using CommandLine;
 
 namespace WebScraper
