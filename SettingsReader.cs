@@ -68,7 +68,8 @@ namespace WebScraper
         {
             properties.ForEach(prop =>
             {
-                pageObject.Properties.Add(prop.Name, prop.Value.Value<string>());
+                var pagePropObj = new PagePropertyObject(prop.Value.Value<string>());
+                pageObject.Properties.Add(prop.Name, pagePropObj);
             });
         }
 

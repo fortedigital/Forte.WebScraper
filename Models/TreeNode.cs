@@ -8,14 +8,14 @@ namespace WebScraper.Models
     {
         public string Name { get; set; }
         
-        public Dictionary<string, string> Properties { get; set; }
+        public Dictionary<string, object> Properties { get; set; }
         
         public List<TreeNode> ChildNodes { get; set; }
         
         public TreeNode(string name)
         {
             Name = name;
-            Properties = new Dictionary<string, string>();
+            Properties = new Dictionary<string, object>();
             ChildNodes = new List<TreeNode>();
         }
 

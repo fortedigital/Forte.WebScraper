@@ -12,9 +12,8 @@ namespace WebScraper.Conditions
         
         public ConditionComposite(string[] testConditions)
         {
-            conditions = testConditions.Select(ConditionFactory.GetCondition);
+            conditions = testConditions.Select(ConditionFactory.GetCondition).Where(c => c != null);
         }
-
 
         public bool Evaluate(CrawlResult result)
         {

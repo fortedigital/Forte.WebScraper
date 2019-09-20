@@ -94,7 +94,9 @@ namespace WebScraper
 
             foreach (var pageLink in pageObject.PageLinks)
             {
-                var links = document.QuerySelectorAll(pageLink.Value)
+                pageLink.Deconstruct(out var linkName, out var selector);
+                
+                var links = document.QuerySelectorAll(selector)
                     .Select(l => l.GetAttribute(AttributeNames.Href))
                     .Select(href => BuildUri(baseUrl, href))
                     .Where(uri => !ExludedSchemas.Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase)).ToList();
@@ -111,12 +113,14 @@ namespace WebScraper
 
             foreach (var property in pageObject.Properties)
             {
-                var elements = document.QuerySelectorAll(property.Value);
+                property.Deconstruct(out var propertyName, out var propertyObject);
+                
+                var elements = document.QuerySelectorAll(propertyObject.Selector);
                 if(elements.Length == 0)
                     continue;
-                
-                var queryResult = elements.Select(e => e.InnerHtml).Aggregate((prod, next) => prod + ";" + next);
-                node.Properties.Add(property.Key, queryResult);
+
+                var extractorResult = propertyObject.ExtractProperties(elements);
+                node.Properties.Add(property.Key, extractorResult);
             }
         }
         

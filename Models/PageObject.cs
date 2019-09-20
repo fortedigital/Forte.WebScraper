@@ -9,7 +9,7 @@ namespace WebScraper.Models
 
         public Dictionary<string, string> PageLinks { get; set; }
 
-        public Dictionary<string, string> Properties { get; set; }
+        public Dictionary<string, PagePropertyObject> Properties { get; set; }
 
         public ConditionComposite TestConditions { get; set; }
         
@@ -17,7 +17,7 @@ namespace WebScraper.Models
         {
             PageName = name;
             PageLinks = new Dictionary<string, string>();
-            Properties = new Dictionary<string, string>();
+            Properties = new Dictionary<string, PagePropertyObject>();
         }
     }
 }
