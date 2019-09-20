@@ -19,5 +19,14 @@ namespace WebScraper.Models
             ChildNodes = new List<TreeNode>();
         }
 
+        public bool ShouldSerializeProperties()
+        {
+            return Properties.Count != 0;
+        }
+
+        public bool ShouldSerializeChildNodes()
+        {
+            return ChildNodes.Count != 0;
+        }
     }
 }
