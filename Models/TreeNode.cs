@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace WebScraper
+namespace WebScraper.Models
 {
     [JsonObject]
     public class TreeNode

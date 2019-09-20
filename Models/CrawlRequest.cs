@@ -1,6 +1,6 @@
 using System;
 
-namespace WebScraper
+namespace WebScraper.Models
 {
     public class CrawlRequest
     {

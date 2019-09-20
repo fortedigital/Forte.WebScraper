@@ -7,8 +7,6 @@ namespace WebScraper.Conditions
 {
     public class ConditionComposite : ICondition
     {
-        public string ConditionValue { get; set; }
-        
         private readonly IEnumerable<ICondition> conditions;
         
         public ConditionComposite(string[] testConditions)

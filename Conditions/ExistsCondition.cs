@@ -5,16 +5,21 @@ namespace WebScraper.Conditions
 {
     public class ExistsCondition : ICondition
     {
-        public string ConditionValue { get; set; }
+        private readonly string selector;
+        private readonly bool isNegated;
         
         public ExistsCondition(string value)
         {
-            ConditionValue = value;
+            isNegated = value.StartsWith("notexists");
+            selector = isNegated 
+                ? value.Replace("notexists:", "") 
+                : value.Replace("exists:", "");
         }
         
         public bool Evaluate(IHtmlDocument document)
         {
-            return document.QuerySelector(ConditionValue) != null;
+            var element = document.QuerySelector(selector);
+            return isNegated ? element == null : element != null;
         }
     }
 }
