@@ -60,9 +60,10 @@ namespace WebScraper
                     }
                     else
                     {
-                        var parent = parentNodes.Find(n => n.Equals(request.ParentNode));
-                        parent?.ChildNodes.Add(node);
+                        request.ParentNode.ChildNodes.Add(node);
                     }
+                    
+                    Console.WriteLine("Scraped " + request.Url.AbsoluteUri + " <- " + pageObj.PageName);
                 }
             }
 

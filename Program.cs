@@ -14,6 +14,7 @@ namespace WebScraper
                     var crawler = new Crawler(o, pageObjects);
                     crawler.Crawl();
                 });
+            Console.WriteLine("Finished scraping");
         }
     }
 }
