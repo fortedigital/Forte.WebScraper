@@ -11,10 +11,9 @@ namespace WebScraper
 {
     public class SettingsReader
     {
-        public List<PageObject> ReadSettings()
+        public List<PageObject> ReadSettings(string path)
         {
-            var jsonFile =
-                File.ReadAllText("C:\\Users\\Admin\\Desktop\\smokeTesterConditionalTestsExtensionExampleJSON.json");
+            var jsonFile = File.ReadAllText(path);
             
             var jObject = JsonConvert.DeserializeObject<JObject>(jsonFile);
             return GetPageObjects(jObject);

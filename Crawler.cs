@@ -26,11 +26,13 @@ namespace WebScraper
         private readonly Queue<CrawlRequest> queue;
         private readonly List<TreeNode> parentNodes;
         private readonly IBrowsingContext context;
+        private readonly Options options;
 
         public Crawler(Options opts, IBrowsingContext context, List<PageObject> pageObjects)
         {
             this.context = context;
             this.pageObjects = pageObjects;
+            options = opts;
             queue = new Queue<CrawlRequest>();
             parentNodes = new List<TreeNode>();
             foreach (var url in opts.StartUrls)
@@ -70,16 +72,16 @@ namespace WebScraper
                 }
             }
 
-            SavePropertiesToFile("C:\\Users\\Admin\\Desktop\\returnedFile.json");
+            SavePropertiesToFile(options.OutputPath);
         }
 
         private void SavePropertiesToFile(string path)
         {
-            var options = new JsonSerializerSettings
+            var serializerSettings = new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented
             };
-            var serializedJson = JsonConvert.SerializeObject(parentNodes, options);
+            var serializedJson = JsonConvert.SerializeObject(parentNodes, serializerSettings);
             using (var writer = File.CreateText(path))
             {
                 writer.Write(serializedJson);
@@ -120,7 +122,7 @@ namespace WebScraper
                     continue;
 
                 var extractorResult = propertyObject.ExtractProperties(elements);
-                node.Properties.Add(property.Key, extractorResult);
+                node.Properties.Add(propertyName, extractorResult);
             }
         }
         

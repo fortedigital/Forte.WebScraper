@@ -10,12 +10,12 @@ namespace WebScraper
     {
         static void Main(string[] args)
         {
-            var pageObjects = new SettingsReader().ReadSettings();
-            var config = Configuration.Default.WithXPath();
-            var context = BrowsingContext.New(config);
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(o =>
                 {
+                    var pageObjects = new SettingsReader().ReadSettings(o.InputPath);
+                    var config = Configuration.Default.WithXPath();
+                    var context = BrowsingContext.New(config);
                     var crawler = new Crawler(o, context, pageObjects);
                     crawler.Crawl();
                 });
