@@ -1,5 +1,6 @@
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using WebScraper.Models;
 
 namespace WebScraper.Conditions
 {
@@ -16,9 +17,9 @@ namespace WebScraper.Conditions
                 : value.Replace("exists:", "");
         }
         
-        public bool Evaluate(IHtmlDocument document)
+        public bool Evaluate(CrawlResult result)
         {
-            var element = document.QuerySelector(selector);
+            var element = result.Document.QuerySelector(selector);
             return isNegated ? element == null : element != null;
         }
     }

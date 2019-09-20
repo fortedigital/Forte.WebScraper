@@ -1,6 +1,6 @@
 using System.Linq;
 using System.Text.RegularExpressions;
-using AngleSharp.Html.Dom;
+using WebScraper.Models;
 
 namespace WebScraper.Conditions
 {
@@ -20,10 +20,11 @@ namespace WebScraper.Conditions
             valueToCompare = parts[2];
         }
         
-        public bool Evaluate(IHtmlDocument document)
+        public bool Evaluate(CrawlResult result)
         {
-            return isNegated ? document.QuerySelector(selector).InnerHtml != valueToCompare 
-                : document.QuerySelector(selector).InnerHtml == valueToCompare;
+            
+            return isNegated ? result.Document.QuerySelector(selector).InnerHtml != valueToCompare 
+                : result.Document.QuerySelector(selector).InnerHtml == valueToCompare;
         }
     }
 }

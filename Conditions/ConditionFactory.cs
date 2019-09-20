@@ -10,6 +10,9 @@ namespace WebScraper.Conditions
             if (value.StartsWith("exists:") || value.StartsWith("notexists:"))
                 return new ExistsCondition(value);
             
+            if(value.StartsWith("urlcontains:") || value.StartsWith("urlnotcontains:"))
+                return new UrlContainsCondition(value);
+            
             return null;
         } 
     }

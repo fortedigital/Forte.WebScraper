@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
+using WebScraper.Models;
 
 namespace WebScraper.Conditions
 {
@@ -15,9 +16,9 @@ namespace WebScraper.Conditions
         }
 
 
-        public bool Evaluate(IHtmlDocument document)
+        public bool Evaluate(CrawlResult result)
         {
-            return conditions.All(c => c.Evaluate(document));
+            return conditions.All(c => c.Evaluate(result));
         }
     }
 }

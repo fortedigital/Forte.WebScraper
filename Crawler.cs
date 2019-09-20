@@ -41,18 +41,18 @@ namespace WebScraper
             while (queue.Count != 0)
             {
                 var request = queue.Dequeue();
-                var document = GetDocument(request.Url);
+                var result = GetCrawlResult(request.Url);
                 foreach (var pageObj in pageObjects)
                 {
                     if (pageObj.TestConditions == null)
                         continue;
-                    if (pageObj.TestConditions != null && !pageObj.TestConditions.Evaluate(document))
+                    if (pageObj.TestConditions != null && !pageObj.TestConditions.Evaluate(result))
                         continue;
                     
                     var node = new TreeNode(pageObj.PageName);
-                    ExtractProperties(document, pageObj, node);
+                    ExtractProperties(result.Document, pageObj, node);
                     
-                    ExtractLinksToQueue(document, pageObj, node, request.Url);
+                    ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
 
                     if (request.ParentNode == null)
                     {
@@ -117,10 +117,11 @@ namespace WebScraper
             }
         }
         
-        private IHtmlDocument GetDocument(Uri url)
+        private CrawlResult GetCrawlResult(Uri url)
         {
             var response = GetResponse(url).Result;
-            return ParseResponse(response).Result;
+            var document = ParseResponse(response).Result;
+            return new CrawlResult(url, document);
         }
 
         private static Uri BuildUri(Uri baseUrl, string href)

@@ -1,10 +1,10 @@
-using AngleSharp.Html.Dom;
+using WebScraper.Models;
 
 namespace WebScraper.Conditions
 {
     public interface ICondition
     {
-        bool Evaluate(IHtmlDocument document);
+        bool Evaluate(CrawlResult result);
         
     }
 }
