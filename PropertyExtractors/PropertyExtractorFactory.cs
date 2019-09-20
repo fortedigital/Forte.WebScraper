@@ -1,3 +1,5 @@
+using System;
+
 namespace WebScraper.PropertyExtractors
 {
     public static class PropertyExtractorFactory
@@ -10,8 +12,7 @@ namespace WebScraper.PropertyExtractors
                 return new InnerHtmlPropertyExtractor();
             }
 
-            selector = null;
-            return null;
+            throw new FormatException(value + " is not a valid extractor");
         }
         
     }

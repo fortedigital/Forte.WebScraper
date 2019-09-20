@@ -1,3 +1,5 @@
+using System;
+
 namespace WebScraper.Conditions
 {
     public static class ConditionFactory
@@ -13,7 +15,7 @@ namespace WebScraper.Conditions
             if(value.StartsWith("urlcontains:") || value.StartsWith("urlnotcontains:"))
                 return new UrlContainsCondition(value);
             
-            return null;
+            throw new FormatException(value + " is not a valid condtion");
         } 
     }
 }

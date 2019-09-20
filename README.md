@@ -30,7 +30,7 @@ Each page property can have 3 items:
   ...
 },
 "properties":{
-  %name%: %selector%
+  %name%: %extractor%:%selector%
 }
 ```
 
@@ -58,7 +58,11 @@ Here are all valid condtions:
        urlcontains:%value%
        urlnotcontains:%value%
     ```
-    
+ 
+ Extractors:
+ 
+ - innerhtml extractor - extracts inner html of an element
+ 
  Selectors:
  
  Both CSS and XPath are valid selectors. However XPath has to be written in special format:
