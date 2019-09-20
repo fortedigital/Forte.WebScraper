@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using AngleSharp;
 using AngleSharp.Dom;
 using AngleSharp.Html.Dom;
 using AngleSharp.Html.Parser;
@@ -24,9 +25,11 @@ namespace WebScraper
         private readonly List<PageObject> pageObjects;
         private readonly Queue<CrawlRequest> queue;
         private readonly List<TreeNode> parentNodes;
+        private readonly IBrowsingContext context;
 
-        public Crawler(Options opts, List<PageObject> pageObjects)
+        public Crawler(Options opts, IBrowsingContext context, List<PageObject> pageObjects)
         {
+            this.context = context;
             this.pageObjects = pageObjects;
             queue = new Queue<CrawlRequest>();
             parentNodes = new List<TreeNode>();
@@ -143,7 +146,7 @@ namespace WebScraper
             
             using (var contentStream = await responseMessage.Content.ReadAsStreamAsync())
             {
-                var parser = new HtmlParser();
+                var parser = new HtmlParser(new HtmlParserOptions(), context);
                 return await parser.ParseDocumentAsync(contentStream);
             }
         }
