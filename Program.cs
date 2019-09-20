@@ -1,4 +1,5 @@
 ﻿using System;
+using AngleSharp;
 using CommandLine;
 
 namespace WebScraper
@@ -8,6 +9,7 @@ namespace WebScraper
         static void Main(string[] args)
         {
             var pageObjects = new SettingsReader().ReadSettings();
+            Configuration.Default.WithXPath();
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(o =>
                 {

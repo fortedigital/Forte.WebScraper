@@ -22,7 +22,6 @@ namespace WebScraper.Conditions
         
         public bool Evaluate(CrawlResult result)
         {
-            
             return isNegated ? result.Document.QuerySelector(selector).InnerHtml != valueToCompare 
                 : result.Document.QuerySelector(selector).InnerHtml == valueToCompare;
         }
