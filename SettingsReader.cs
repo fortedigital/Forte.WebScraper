@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Flee.PublicTypes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebScraper.Conditions;
@@ -40,7 +42,7 @@ namespace WebScraper
                 switch (p.Name)
                 {
                     case "test":
-                        ExtractTestConditions(pageObject, (JArray) p.Value);
+                        ExtractTestConditions(pageObject, p.Value);
                         break;
                     /*case "linkPattern":
                         ExtractLinkPattern(pageObject, p.Value);
@@ -77,9 +79,22 @@ namespace WebScraper
             //pageObject.LinkPattern = pattern.Value<string>();
         }
         
-        private static void ExtractTestConditions(PageObject pageObject, JArray conditions)
+        private static void ExtractTestConditions(PageObject pageObject, JToken conditions)
         {
-            pageObject.TestConditions = new ConditionComposite(conditions.Select(t => t.ToString()).ToArray());
+            var expressionContext = new ExpressionContext();
+            expressionContext.Variables["doc"] = new CrawlResult(null, null);
+            var expression = expressionContext.CompileGeneric<bool>(conditions.Value<string>());
+
+            bool Condition(CrawlResult result)
+            {
+                lock (expressionContext)
+                {
+                    expressionContext.Variables["doc"] = result;
+                    return expression.Evaluate();
+                }
+            }
+
+            pageObject.TestCondition = Condition;
         }
     }
 }

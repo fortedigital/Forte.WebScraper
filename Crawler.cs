@@ -43,49 +43,63 @@ namespace WebScraper
 
         public void Crawl()
         {
+            var visitedUrls = new HashSet<Uri>();
+            
             while (queue.Count != 0)
             {
                 var request = queue.Dequeue();
+                
+                if (visitedUrls.Contains(request.Url))
+                    continue;
+                visitedUrls.Add(request.Url);
+                
                 var result = GetCrawlResult(request.Url);
                 foreach (var pageObj in pageObjects)
                 {
-                    if (pageObj.TestConditions == null)
+                    if (pageObj.TestCondition == null)
                         continue;
-                    if (pageObj.TestConditions != null && !pageObj.TestConditions.Evaluate(result))
+                    if (pageObj.TestCondition != null && !pageObj.TestCondition(result))
                         continue;
                     
                     var node = new TreeNode(pageObj.PageName);
-                    ExtractProperties(result.Document, pageObj, node);
+                    ExtractProperties(result, pageObj, node);
                     
                     ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
 
-                    if (request.ParentNode == null)
+                    lock (this.parentNodes)
                     {
-                        parentNodes.Add(node);
+                        if (request.ParentNode == null)
+                        {
+                            parentNodes.Add(node);
+                        }
+                        else
+                        {
+                            request.ParentNode.ChildNodes.Add(node);
+                        }
                     }
-                    else
-                    {
-                        request.ParentNode.ChildNodes.Add(node);
-                    }
-                    
+
                     Console.WriteLine("Scraped " + request.Url.AbsoluteUri + " <- " + pageObj.PageName);
+                    break;
                 }
             }
 
             SavePropertiesToFile(options.OutputPath);
         }
 
-        private void SavePropertiesToFile(string path)
+        public void SavePropertiesToFile(string path)
         {
-            var serializerSettings = new JsonSerializerSettings
+            lock (this.parentNodes)
             {
-                Formatting = Formatting.Indented
-            };
-            var serializedJson = JsonConvert.SerializeObject(parentNodes, serializerSettings);
-            using (var writer = File.CreateText(path))
-            {
-                writer.Write(serializedJson);
-                writer.Flush();
+                var serializerSettings = new JsonSerializerSettings
+                {
+                    Formatting = Formatting.Indented
+                };
+                var serializedJson = JsonConvert.SerializeObject(parentNodes, serializerSettings);
+                using (var writer = File.CreateText(path))
+                {
+                    writer.Write(serializedJson);
+                    writer.Flush();
+                }
             }
         }
         
@@ -106,18 +120,18 @@ namespace WebScraper
             
         }
 
-        private void ExtractProperties(IHtmlDocument document, PageObject pageObject, TreeNode node)
+        private void ExtractProperties(CrawlResult crawlResult, PageObject pageObject, TreeNode node)
         {
             if (pageObject.Properties.Count == 0)
                 return;
 
             foreach (var (propertyName, propertyObject) in pageObject.Properties.Select(x => (x.Key, x.Value)))
             {
-                var elements = document.QuerySelectorAll(propertyObject.Selector);
+                var elements = crawlResult.Document.QuerySelectorAll(propertyObject.Selector);
                 if(elements.Length == 0)
                     continue;
 
-                var extractorResult = propertyObject.ExtractProperties(elements);
+                var extractorResult = propertyObject.ExtractProperties(crawlResult, elements);
                 node.Properties.Add(propertyName, extractorResult);
             }
         }

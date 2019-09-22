@@ -1,0 +1,47 @@
+{
+	"ProductRange": {
+		"test": "doc.Css(\"#mainColumnRight > h3:nth-child(2)\").InnerText = \"Other products\"",
+		"pageLinks":{
+			"productCategories": "#mainColumnCenter3Col > ul > li > a"
+		},
+		"properties": {
+			"title": "innertext:#mainColumnCenter3Col > h1:nth-of-type(1)",
+			"intro": "innertext:#mainColumnCenter3Col > h2:nth-of-type(1)",
+			"body": "outerhtml:#mainColumnCenter3Col > p"
+		}
+	},
+	"ProductCategory": {
+		"test": "doc.Css(\"#mainColumnCenter3Col > h3:nth-of-type(1)\").InnerText = \"Product group\"",
+		"pageLinks": {
+			"products": "#mainColumnCenter3Col ul:nth-of-type(2) li a"
+		},
+		"properties": {
+			"title": "innertext:#mainColumnCenter3Col > h1:nth-of-type(1)",
+			"intro": "innertext:#mainColumnCenter3Col > h2:nth-of-type(1)",
+			"body": "outerhtml:#mainColumnCenter3Col > p"
+		}
+	},
+	"ProductSubCategory": {
+		"test": "doc.Css(\"#mainColumnCenter3Col > h3:nth-of-type(1)\").InnerText = doc.Css(\"#mainColumnRight > h3:nth-of-type(1)\").InnerText",
+		"pageLinks": {
+			"products": "#mainColumnCenter3Col > ul > li > a"
+		},
+		"properties": {
+			"title": "innertext:#mainColumnCenter3Col > h2:nth-of-type(1)"
+		}
+	},
+	"ProductSubCategoryDownloads": {
+		"test": "doc.Css(\"#mainColumnCenter3Col > p:nth-of-type(1)\").InnerText.StartsWith(\"Unless otherwise\")",
+		"properties": {
+			"downloads": "download:#mainColumnCenter3Col > table td a"
+		}
+	},	
+	"Product": {
+		"test": "doc.Css(\"#mainColumnCenter3Col > h1:nth-of-type(1)\").InnerText.StartsWith(doc.Css(\"#mainColumnRight > h3:nth-of-type(1)\").InnerText) OR doc.Css(\"#mainColumnRight > h3:nth-of-type(1)\").InnerText.StartsWith(\"The following\") OR doc.Css(\"#mainColumnRight > h3:nth-of-type(1)\").InnerText = \"PX Family\"",
+		"properties": {
+			"title": "innertext:#mainColumnCenter3Col > h1:nth-of-type(1)",
+			"intro": "innertext:#mainColumnCenter3Col > h2:nth-of-type(1)",
+			"body": "outerhtml:#mainColumnCenter3Col > p, #mainColumnCenter3Col > ul"
+		}
+	}
+}

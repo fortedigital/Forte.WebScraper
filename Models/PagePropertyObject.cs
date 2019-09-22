@@ -15,9 +15,9 @@ namespace WebScraper.Models
             Selector = selector;
         }
 
-        public object ExtractProperties(IHtmlCollection<IElement> elements)
+        public object ExtractProperties(CrawlResult crawlResult, IHtmlCollection<IElement> elements)
         {
-            return Extractor.ExtractProperties(elements);
+            return Extractor.ExtractProperties(crawlResult, elements);
         }
 
     }

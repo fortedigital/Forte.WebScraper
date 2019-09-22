@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using WebScraper.Conditions;
 
@@ -11,7 +12,7 @@ namespace WebScraper.Models
 
         public Dictionary<string, PagePropertyObject> Properties { get; set; }
 
-        public ConditionComposite TestConditions { get; set; }
+        public Func<CrawlResult, bool> TestCondition { get; set; }
         
         public PageObject(string name)
         {

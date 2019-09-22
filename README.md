@@ -36,7 +36,7 @@ Each page property can have 3 items:
 
 Conditions:
 
-Here are all valid condtions:
+Here are all valid conditions:
 
 - value equal/not equal condition - checks if inner html of this element is equal to value
 

@@ -15,6 +15,12 @@ namespace WebScraper
                     var config = Configuration.Default.WithXPath();
                     var context = BrowsingContext.New(config);
                     var crawler = new Crawler(o, context, pageObjects);
+                    
+                    Console.CancelKeyPress += (sender, eventArgs) =>
+                    {
+                        crawler.SavePropertiesToFile(o.OutputPath);
+                    };
+
                     crawler.Crawl();
                 });
             Console.WriteLine("Finished scraping");
