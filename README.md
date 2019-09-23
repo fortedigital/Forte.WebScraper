@@ -17,11 +17,13 @@ Main body consists of one json object with list of pages as properties:
 
 Each page property can have 3 items:
 
-- test - list of conditions which identify this page type; make sure that these conditions satisfy only one page type
+- test - string of conditions which identify this page type; make sure that these conditions satisfy only one page type
 
 - pageLinks - list of children pages with a selector to element from which url can be extracted
 
 - properties - list of properties to be extracted from this page type with a selector to wanted element
+
+- languages - list of links to this page in other languages
 
 ```json
 "test": [%condition%,...],
@@ -31,37 +33,53 @@ Each page property can have 3 items:
 },
 "properties":{
   %name%: %extractor%:%selector%
+},
+"languages":{
+  %lang_identifier%: %selector%
 }
 ```
 
 Conditions:
 
-Here are all valid conditions:
+Access page object:
 
-- value equal/not equal condition - checks if inner html of this element is equal to value
+```doc```
 
-    ```text
-       value:%selector% == %value%
-       value:%selector% != %value%
-    ```
-    
-- element exists/not exists condition - checks if element  exists for given selector
+Get element using Css selector or XPath:
 
-    ```text
-       exists:%selector%
-       notexists:%selector%
-    ```
-    
-- url contains/not contains string - checks if url contains given substring
+```text
+.Css(...)
+.XPath(...)
+```
 
-    ```text
-       urlcontains:%value%
-       urlnotcontains:%value%
-    ```
+Access element inner text and work with it:
+
+```.InnerText = "..."```
+
+```InnerText``` is of type string, so you can access or call string properties/methods:
+
+```.InnerText.StartsWith(...)```
+
+Check url if it contains value:
+
+```doc.UrlContains(...)```
+
+Check page language:
+
+```doc.Language = ...```
  
+<br/>
  Extractors:
  
- - innerhtml extractor - extracts inner html of an element
+ - innertext extractor - extracts inner text only
+ 
+ - innerhtml extractor - extracts inner html of an element; all content of and element (e.g. images) 
+ is downloaded and path to local temporary folder is put in href place
+ 
+ - outerhtml extractor - extracts outer html of an element; all content of and element (e.g. images) 
+ is downloaded and path to local temporary folder is put in href place
+ 
+ - download extractor - downloads item to temporary folder and prints path to output file
  
  Selectors:
  
