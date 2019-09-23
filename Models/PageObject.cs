@@ -14,10 +14,13 @@ namespace WebScraper.Models
 
         public Func<CrawlResult, bool> TestCondition { get; set; }
         
+        public Dictionary<string, string> Languages { get; set; }
+        
         public PageObject(string name)
         {
             PageName = name;
             PageLinks = new Dictionary<string, string>();
+            Languages = new Dictionary<string, string>();
             Properties = new Dictionary<string, PagePropertyObject>();
         }
     }

@@ -24,7 +24,7 @@ namespace WebScraper
         
         private readonly List<PageObject> pageObjects;
         private readonly Queue<CrawlRequest> queue;
-        private readonly List<TreeNode> parentNodes;
+        private readonly List<TreeNode> rootNodes;
         private readonly IBrowsingContext context;
         private readonly Options options;
 
@@ -34,7 +34,7 @@ namespace WebScraper
             this.pageObjects = pageObjects;
             options = opts;
             queue = new Queue<CrawlRequest>();
-            parentNodes = new List<TreeNode>();
+            rootNodes = new List<TreeNode>();
             foreach (var url in opts.StartUrls)
             {
                 queue.Enqueue(new CrawlRequest(new Uri(url), null));
@@ -62,19 +62,34 @@ namespace WebScraper
                         continue;
                     
                     var node = new TreeNode(pageObj.PageName);
-                    ExtractProperties(result, pageObj, node);
-                    
-                    ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
-
-                    lock (this.parentNodes)
+                    lock (this.rootNodes)
                     {
                         if (request.ParentNode == null)
                         {
-                            parentNodes.Add(node);
+                            rootNodes.Add(node);
                         }
                         else
                         {
-                            request.ParentNode.ChildNodes.Add(node);
+                            if (request.ParentNode.Languages.ContainsKey(result.Language))
+                            {
+                                request.ParentNode.Languages[result.Language] = node;
+                            }
+                            else
+                            {
+                                request.ParentNode.ChildNodes.Add(node);
+                            }
+                            node.Parent = request.ParentNode;
+                        }
+                    }
+                    
+                    ExtractProperties(result, pageObj, node);
+                    ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
+
+                    lock (this.rootNodes)
+                    {
+                        if (rootNodes.Contains(node) || !node.Parent.HasLanguagePage(node))
+                        {
+                            ExtractLanguages(result.Document, pageObj, node, request.Url);
                         }
                     }
 
@@ -88,18 +103,33 @@ namespace WebScraper
 
         public void SavePropertiesToFile(string path)
         {
-            lock (this.parentNodes)
+            lock (this.rootNodes)
             {
                 var serializerSettings = new JsonSerializerSettings
                 {
                     Formatting = Formatting.Indented
                 };
-                var serializedJson = JsonConvert.SerializeObject(parentNodes, serializerSettings);
+                var serializedJson = JsonConvert.SerializeObject(rootNodes, serializerSettings);
                 using (var writer = File.CreateText(path))
                 {
                     writer.Write(serializedJson);
                     writer.Flush();
                 }
+            }
+        }
+
+        private void ExtractLanguages(IHtmlDocument document, PageObject pageObject, TreeNode parent, Uri baseUrl)
+        {
+            if (pageObject.Languages.Count == 0)
+                return;
+            
+            foreach (var (lang, selector) in pageObject.Languages.Select(x => (x.Key, x.Value)))
+            {
+                parent.Languages.Add(lang, null);
+
+                var link = document.QuerySelector(selector).GetAttribute(AttributeNames.Href);
+                queue.Enqueue(new CrawlRequest(BuildUri(baseUrl, link), parent));
+
             }
         }
         

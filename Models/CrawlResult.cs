@@ -21,11 +21,19 @@ namespace WebScraper.Models
             return new Element(this.Document.QuerySelector(selector));
         }
 
+        public Element XPath(string selector)
+        {
+            return new Element(this.Document.QuerySelector("*[xpath>'" + selector + "']"));
+        }
+
+        public string Language => this.Document.QuerySelector("html")?.GetAttribute("lang");
+
         public class Element
         {
             private readonly IElement innerElement;
 
             public string InnerText => this.innerElement?.TextContent ?? "";
+            public string Language => this.innerElement?.GetAttribute("lang") ?? "";
             public Element(IElement innerElement)
             {
                 this.innerElement = innerElement;

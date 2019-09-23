@@ -44,9 +44,9 @@ namespace WebScraper
                     case "test":
                         ExtractTestConditions(pageObject, p.Value);
                         break;
-                    /*case "linkPattern":
-                        ExtractLinkPattern(pageObject, p.Value);
-                        break;*/
+                    case "languages":
+                        ExtractLanguages(pageObject, p.Value.Children<JProperty>().ToList());
+                        break;
                     case "pageLinks":
                         ExtractPageLinks(pageObject, p.Value.Children<JProperty>().ToList());
                         break;
@@ -57,9 +57,17 @@ namespace WebScraper
             });
         }
 
-        private static void ExtractPageLinks(PageObject pageObject, List<JProperty> properties)
+        private static void ExtractLanguages(PageObject pageObject, List<JProperty> languages)
         {
-            properties.ForEach(prop =>
+            languages.ForEach(lang =>
+            {
+                pageObject.Languages.Add(lang.Name, lang.Value.Value<string>());
+            });
+        }
+        
+        private static void ExtractPageLinks(PageObject pageObject, List<JProperty> pageLinks)
+        {
+            pageLinks.ForEach(prop =>
             {
                 pageObject.PageLinks.Add(prop.Name, prop.Value.Value<string>());
             });

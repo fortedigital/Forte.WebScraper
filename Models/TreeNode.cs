@@ -12,13 +12,29 @@ namespace WebScraper.Models
         
         public List<TreeNode> ChildNodes { get; set; }
         
+        public Dictionary<string, TreeNode> Languages { get; set; }
+        
+        [JsonIgnore]
+        public TreeNode Parent { get; set; }
+        
         public TreeNode(string name)
         {
             Name = name;
             Properties = new Dictionary<string, object>();
             ChildNodes = new List<TreeNode>();
+            Languages = new Dictionary<string, TreeNode>();
         }
 
+        public bool HasLanguagePage(TreeNode node)
+        {
+            return this.Languages.ContainsValue(node);
+        }
+
+        public bool ShouldSerializeLanguages()
+        {
+            return Languages.Count != 0;
+        }
+        
         public bool ShouldSerializeProperties()
         {
             return Properties.Count != 0;
