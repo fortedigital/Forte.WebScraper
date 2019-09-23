@@ -61,7 +61,7 @@ namespace WebScraper
                     if (pageObj.TestCondition != null && !pageObj.TestCondition(result))
                         continue;
                     
-                    var node = new TreeNode(pageObj.PageName);
+                    var node = new TreeNode(pageObj.PageName, result.RequestUrl);
                     lock (this.rootNodes)
                     {
                         if (request.ParentNode == null)
@@ -82,17 +82,20 @@ namespace WebScraper
                         }
                     }
                     
+                    
                     ExtractProperties(result, pageObj, node);
 
                     lock (this.rootNodes)
                     {
                         if (rootNodes.Contains(node) || !node.Parent.HasLanguagePage(node))
                         {
-                            ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
-                            ExtractLanguages(result.Document, pageObj, node, request.Url);
+                            ExtractLinksToQueue(result, pageObj, node);
+                            ExtractLanguages(result, pageObj, node);
                         }
                     }
 
+                    ExtractPagination(result, pageObj, node);
+                    
                     Console.WriteLine("Scraped " + request.Url.AbsoluteUri + " <- " + pageObj.PageName);
                     break;
                 }
@@ -117,8 +120,27 @@ namespace WebScraper
                 }
             }
         }
+        
+        private void ExtractPagination(CrawlResult crawlResult, PageObject pageObject, TreeNode parent)
+        {
+            if (string.IsNullOrWhiteSpace(pageObject.Pagination))
+                return;
+            
+            Console.WriteLine(crawlResult.RequestUrl + " pagination:");
+            var currentDoc = crawlResult.Document;
+            var nextPageRef = currentDoc.QuerySelector(pageObject.Pagination).GetAttribute(AttributeNames.Href);
+            while (nextPageRef != null)
+            {
+                var result = GetCrawlResult(BuildUri(crawlResult.RequestUrl, nextPageRef));
+                Console.WriteLine("Extracting links from " + result.RequestUrl);
+                ExtractLinksToQueue(result, pageObject, parent);
+                
+                currentDoc = result.Document;
+                nextPageRef = currentDoc.QuerySelector(pageObject.Pagination)?.GetAttribute(AttributeNames.Href);
+            }
+        }
 
-        private void ExtractLanguages(IHtmlDocument document, PageObject pageObject, TreeNode parent, Uri baseUrl)
+        private void ExtractLanguages(CrawlResult crawlResult, PageObject pageObject, TreeNode parent)
         {
             if (pageObject.Languages.Count == 0)
                 return;
@@ -127,23 +149,23 @@ namespace WebScraper
             {
                 parent.Languages.Add(lang, null);
 
-                var link = document.QuerySelector(selector)?.GetAttribute(AttributeNames.Href);
+                var link = crawlResult.Document.QuerySelector(selector)?.GetAttribute(AttributeNames.Href);
                 if (link != null)
-                    queue.Enqueue(new CrawlRequest(BuildUri(baseUrl, link), parent));
+                    queue.Enqueue(new CrawlRequest(BuildUri(crawlResult.RequestUrl, link), parent));
 
             }
         }
         
-        private void ExtractLinksToQueue(IHtmlDocument document, PageObject pageObject, TreeNode parent, Uri baseUrl)
+        private void ExtractLinksToQueue(CrawlResult crawlResult, PageObject pageObject, TreeNode parent)
         {
             if (pageObject.PageLinks.Count == 0)
                 return;
 
             foreach (var (linkName, selector) in pageObject.PageLinks.Select(x => (x.Key, x.Value)))
             {
-                var links = document.QuerySelectorAll(selector)
+                var links = crawlResult.Document.QuerySelectorAll(selector)
                     .Select(l => l.GetAttribute(AttributeNames.Href))
-                    .Select(href => BuildUri(baseUrl, href))
+                    .Select(href => BuildUri(crawlResult.RequestUrl, href))
                     .Where(uri => !ExludedSchemas.Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase)).ToList();
                 
                 links.ForEach(uri => queue.Enqueue(new CrawlRequest(uri, parent)));
@@ -166,7 +188,7 @@ namespace WebScraper
                 node.Properties.Add(propertyName, extractorResult);
             }
         }
-        
+
         private CrawlResult GetCrawlResult(Uri url)
         {
             var response = GetResponse(url).Result;

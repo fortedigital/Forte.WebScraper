@@ -16,6 +16,8 @@ namespace WebScraper.Models
         
         public Dictionary<string, string> Languages { get; set; }
         
+        public string Pagination { get; set; }
+        
         public PageObject(string name)
         {
             PageName = name;

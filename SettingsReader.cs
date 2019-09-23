@@ -1,12 +1,9 @@
-using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using Flee.PublicTypes;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WebScraper.Conditions;
 using WebScraper.Models;
 
 namespace WebScraper
@@ -53,8 +50,16 @@ namespace WebScraper
                     case "properties":
                         ExtractProperties(pageObject, p.Value.Children<JProperty>().ToList());
                         break;
+                    case "pagination":
+                        ExtractPagination(pageObject, p.Value);
+                        break;
                 }
             });
+        }
+
+        private static void ExtractPagination(PageObject pageObject, JToken token)
+        {
+            pageObject.Pagination = token.Value<string>();
         }
 
         private static void ExtractLanguages(PageObject pageObject, List<JProperty> languages)

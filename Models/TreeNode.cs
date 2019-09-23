@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
@@ -9,6 +10,8 @@ namespace WebScraper.Models
     {
         public string Name { get; set; }
         
+        public string Url { get; set; }
+        
         public Dictionary<string, object> Properties { get; set; }
         
         public List<TreeNode> ChildNodes { get; set; }
@@ -18,9 +21,10 @@ namespace WebScraper.Models
         [JsonIgnore]
         public TreeNode Parent { get; set; }
         
-        public TreeNode(string name)
+        public TreeNode(string name, Uri requestUrl)
         {
             Name = name;
+            Url = requestUrl.AbsoluteUri;
             Properties = new Dictionary<string, object>();
             ChildNodes = new List<TreeNode>();
             Languages = new Dictionary<string, TreeNode>();
