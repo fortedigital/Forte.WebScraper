@@ -83,12 +83,12 @@ namespace WebScraper
                     }
                     
                     ExtractProperties(result, pageObj, node);
-                    ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
 
                     lock (this.rootNodes)
                     {
                         if (rootNodes.Contains(node) || !node.Parent.HasLanguagePage(node))
                         {
+                            ExtractLinksToQueue(result.Document, pageObj, node, request.Url);
                             ExtractLanguages(result.Document, pageObj, node, request.Url);
                         }
                     }
@@ -127,8 +127,9 @@ namespace WebScraper
             {
                 parent.Languages.Add(lang, null);
 
-                var link = document.QuerySelector(selector).GetAttribute(AttributeNames.Href);
-                queue.Enqueue(new CrawlRequest(BuildUri(baseUrl, link), parent));
+                var link = document.QuerySelector(selector)?.GetAttribute(AttributeNames.Href);
+                if (link != null)
+                    queue.Enqueue(new CrawlRequest(BuildUri(baseUrl, link), parent));
 
             }
         }

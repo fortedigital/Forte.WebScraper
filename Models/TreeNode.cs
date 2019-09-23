@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace WebScraper.Models
@@ -32,7 +33,7 @@ namespace WebScraper.Models
 
         public bool ShouldSerializeLanguages()
         {
-            return Languages.Count != 0;
+            return Languages.Count != 0 && Languages.Values.Any(v => v != null);
         }
         
         public bool ShouldSerializeProperties()
