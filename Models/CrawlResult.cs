@@ -28,12 +28,16 @@ namespace WebScraper.Models
 
         public string Language => this.Document.QuerySelector("html")?.GetAttribute("lang");
 
+        public bool UrlContains(string value)
+        {
+            return RequestUrl.AbsoluteUri.Contains(value);
+        }
+        
         public class Element
         {
             private readonly IElement innerElement;
 
             public string InnerText => this.innerElement?.TextContent ?? "";
-            public string Language => this.innerElement?.GetAttribute("lang") ?? "";
             public Element(IElement innerElement)
             {
                 this.innerElement = innerElement;
