@@ -15,7 +15,7 @@ Main body consists of one json object with list of pages as properties:
 }
 ```
 
-Each page property can have 3 items:
+Each page property can have 5 items:
 
 - test - string of conditions which identify this page type; make sure that these conditions satisfy only one page type
 
@@ -24,6 +24,8 @@ Each page property can have 3 items:
 - properties - list of properties to be extracted from this page type with a selector to wanted element
 
 - languages - list of links to this page in other languages
+
+- pagination - selector to element containing next page link if page has pagination
 
 ```json
 "test": [%condition%,...],
@@ -36,7 +38,8 @@ Each page property can have 3 items:
 },
 "languages":{
   %lang_identifier%: %selector%
-}
+},
+"pagination":%selector%
 ```
 
 Conditions:
@@ -56,7 +59,7 @@ Access element inner text and work with it:
 
 ```.InnerText = "..."```
 
-```InnerText``` is of type string, so you can access or call string properties/methods:
+```InnerText``` is of type string, so you can access/call string properties/methods:
 
 ```.InnerText.StartsWith(...)```
 
@@ -83,8 +86,9 @@ Check page language:
  
  Selectors:
  
- Both CSS and XPath are valid selectors. However XPath has to be written in special format:
+ Both CSS and XPath are valid selectors. However XPath has to be written in special format 
+ (except when using .XPath(...) condition):
  
  \*[xpath>'%path%']
  
- where %path% is valid XPath. If XPath contains quotes write them in json as escaped double quotes (\\") 
+ where %path% is valid XPath. If XPath contains quotes write them in json as escaped double quotes (\\").

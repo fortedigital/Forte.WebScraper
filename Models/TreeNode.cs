@@ -35,6 +35,11 @@ namespace WebScraper.Models
             return this.Languages.ContainsValue(node);
         }
 
+        public bool IsLanguageSubPage()
+        {
+            return this.Parent.HasLanguagePage(this);
+        }
+        
         public bool ShouldSerializeLanguages()
         {
             return Languages.Count != 0 && Languages.Values.Any(v => v != null);

@@ -82,19 +82,7 @@ namespace WebScraper
                         }
                     }
                     
-                    
-                    ExtractProperties(result, pageObj, node);
-
-                    lock (this.rootNodes)
-                    {
-                        if (rootNodes.Contains(node) || !node.Parent.HasLanguagePage(node))
-                        {
-                            ExtractLinksToQueue(result, pageObj, node);
-                            ExtractLanguages(result, pageObj, node);
-                        }
-                    }
-
-                    ExtractPagination(result, pageObj, node);
+                    ScrapeWebsite(result, pageObj, node);
                     
                     Console.WriteLine("Scraped " + request.Url.AbsoluteUri + " <- " + pageObj.PageName);
                     break;
@@ -120,15 +108,31 @@ namespace WebScraper
                 }
             }
         }
-        
-        private void ExtractPagination(CrawlResult crawlResult, PageObject pageObject, TreeNode parent)
+
+        private void ScrapeWebsite(CrawlResult crawlResult, PageObject pageObject, TreeNode node)
+        {
+            ExtractProperties(crawlResult, pageObject, node);
+
+            lock (this.rootNodes)
+            {
+                if (rootNodes.Contains(node) || !node.IsLanguageSubPage())
+                {
+                    ExtractLanguages(crawlResult, pageObject, node);
+                    ExtractLinksToQueue(crawlResult, pageObject, node);
+                    ExtractPaginationPages(crawlResult, pageObject, node);
+                }
+            }
+
+        }
+
+        private void ExtractPaginationPages(CrawlResult crawlResult, PageObject pageObject, TreeNode parent)
         {
             if (string.IsNullOrWhiteSpace(pageObject.Pagination))
                 return;
             
             Console.WriteLine(crawlResult.RequestUrl + " pagination:");
             var currentDoc = crawlResult.Document;
-            var nextPageRef = currentDoc.QuerySelector(pageObject.Pagination).GetAttribute(AttributeNames.Href);
+            var nextPageRef = currentDoc.QuerySelector(pageObject.Pagination)?.GetAttribute(AttributeNames.Href);
             while (nextPageRef != null)
             {
                 var result = GetCrawlResult(BuildUri(crawlResult.RequestUrl, nextPageRef));
