@@ -82,7 +82,9 @@ Check page language:
  - outerhtml extractor - extracts outer html of an element; all content of and element (e.g. images) 
  is downloaded and path to local temporary folder is put in href place
  
- - download extractor - downloads item to temporary folder and prints path to output file
+ - image extractor - downloads image in img tag to temporary folder and prints path to output file
+ 
+ - download extractor - downloads item in anchor tag to temporary folder and prints path to output file
  
  Selectors:
  

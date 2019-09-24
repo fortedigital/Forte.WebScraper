@@ -30,6 +30,12 @@ namespace WebScraper.PropertyExtractors
                 return new DownloadsPropertyExtractor();;
             }
 
+            if (value.StartsWith("image:"))
+            {
+                selector = value.Replace("image:", "");
+                return new ImagePropertyExtractor();
+            }
+
             throw new FormatException(value + " is not a valid extractor");
         }
         
