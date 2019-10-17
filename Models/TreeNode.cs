@@ -20,14 +20,18 @@ namespace WebScraper.Models
         
         [JsonIgnore]
         public TreeNode Parent { get; set; }
-        
-        public TreeNode(string name, Uri requestUrl)
+
+        public TreeNode()
         {
-            Name = name;
-            Url = requestUrl.AbsoluteUri;
             Properties = new Dictionary<string, object>();
             ChildNodes = new List<TreeNode>();
             Languages = new Dictionary<string, TreeNode>();
+        }
+        
+        public TreeNode(string name, Uri requestUrl) : this()
+        {
+            Name = name;
+            Url = requestUrl.AbsoluteUri;
         }
 
         public bool HasLanguagePage(TreeNode node)
