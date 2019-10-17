@@ -18,10 +18,25 @@
 			"title": "innertext:.entry-title"
 		}
 	},
+	"ContentListPage":{
+		"test": "doc.Css(\".collapsible-data\").Exists",
+		"properties": {
+			"header": "innertext:.entry-title",
+			"intro": "innertext:.ingress p",
+			"content": "innerhtml:.collapsible-data"
+		},
+		"pageLinks": {
+			"programs": "div.wrapper > div.content ul li a"
+		}
+	},
 	"ArticlePage": {
 		"test": "doc.Css(\"article[role='article']\").Exists",
+		"pageLinks":{
+			"subpages": ".entry-content a"
+		},
 		"properties": {
-			"title": "innertext:.entry-title"
+			"title": "innertext:.entry-title",
+			"content": "innerhtml:.entry-content"
 		}
 	}
 }

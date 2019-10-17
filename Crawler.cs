@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading.Tasks;
 using AngleSharp;
 using AngleSharp.Dom;
@@ -45,6 +47,9 @@ namespace WebScraper
         public void Crawl()
         {
             var visitedUrls = new HashSet<Uri>();
+            var stopwatch = Stopwatch.StartNew();
+            stopwatch.Start();
+            var scrapedLinkCount = 0;
             
             while (queue.Count != 0)
             {
@@ -89,10 +94,13 @@ namespace WebScraper
                     ScrapeWebsite(result, pageObj, node);
                     
                     Console.WriteLine("Scraped " + request.Url.AbsoluteUri + " <- " + pageObj.PageName);
+                    scrapedLinkCount++;
                     break;
                 }
             }
 
+            stopwatch.Stop();
+            Console.WriteLine($"Scraped {scrapedLinkCount} links. Scraping time: {stopwatch.Elapsed}");
             SavePropertiesToFile(options.OutputPath);
         }
 
@@ -174,10 +182,16 @@ namespace WebScraper
 
             foreach (var (linkName, selector) in pageObject.PageLinks.Select(x => (x.Key, x.Value)))
             {
-                var links = crawlResult.Document.QuerySelectorAll(selector)
-                    .Select(l => l.GetAttribute(AttributeNames.Href))
+                var extractedLinks = crawlResult.Document.QuerySelectorAll(selector);
+                if(extractedLinks == null)
+                    continue;
+                
+                var links = extractedLinks.Select(l => l.GetAttribute(AttributeNames.Href))
+                    .Where(h => !string.IsNullOrWhiteSpace(h))
+                    .Where(h => ExludedSchemas.All(s => !h.Contains(s)))
                     .Select(href => BuildUri(crawlResult.RequestUrl, href))
-                    .Where(uri => !ExludedSchemas.Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase)).ToList();
+                    //.Where(uri => !ExludedSchemas.Contains(uri.Scheme, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
                 
                 links.ForEach(uri => queue.Enqueue(new CrawlRequest(uri, parent)));
             }
@@ -202,8 +216,9 @@ namespace WebScraper
 
         private CrawlResult GetCrawlResult(Uri url)
         {
-            var response = GetResponse(url).Result;
-            if (!response.IsSuccessStatusCode) 
+            var response = GetResponse(url)?.Result;
+            
+            if (response == null || !response.IsSuccessStatusCode) 
                 return null;
             
             var document = this.ParseResponse(response).Result;
@@ -242,9 +257,17 @@ namespace WebScraper
                 RequestUri = url,
                 Method = HttpMethod.Get,
             };
-            using (var client = new HttpClient())
+            try
             {
-                return await client.SendAsync(httpRequestMessage);
+                using (var client = new HttpClient())
+                {
+                    return await client.SendAsync(httpRequestMessage);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
             }
         }
     }
