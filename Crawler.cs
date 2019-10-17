@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AngleSharp;
@@ -54,6 +55,9 @@ namespace WebScraper
                 visitedUrls.Add(request.Url);
                 
                 var result = GetCrawlResult(request.Url);
+                if (result == null)
+                    continue;
+                
                 foreach (var pageObj in pageObjects)
                 {
                     if (pageObj.TestCondition == null)
@@ -136,6 +140,9 @@ namespace WebScraper
             while (nextPageRef != null)
             {
                 var result = GetCrawlResult(BuildUri(crawlResult.RequestUrl, nextPageRef));
+                if (result == null)
+                    continue;
+                
                 Console.WriteLine("Extracting links from " + result.RequestUrl);
                 ExtractLinksToQueue(result, pageObject, parent);
                 
@@ -196,8 +203,12 @@ namespace WebScraper
         private CrawlResult GetCrawlResult(Uri url)
         {
             var response = GetResponse(url).Result;
-            var document = ParseResponse(response).Result;
+            if (!response.IsSuccessStatusCode) 
+                return null;
+            
+            var document = this.ParseResponse(response).Result;
             return new CrawlResult(url, document);
+
         }
 
         private static Uri BuildUri(Uri baseUrl, string href)

@@ -41,7 +41,7 @@
 		"properties": {
 			"title": "innertext:#mainColumnCenter3Col > h1:nth-of-type(1)",
 			"intro": "innertext:#mainColumnCenter3Col > h2:nth-of-type(1)",
-			"body": "outerhtml:#mainColumnCenter3Col > p, #mainColumnCenter3Col > ul"
+			"body": "outerhtml:#mainColumnCenter3Col p, #mainColumnCenter3Col ul"
 		}
 	}
 }

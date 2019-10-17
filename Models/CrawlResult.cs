@@ -38,6 +38,9 @@ namespace WebScraper.Models
             private readonly IElement innerElement;
 
             public string InnerText => this.innerElement?.TextContent ?? "";
+
+            public bool Exists => this.innerElement != null;
+            
             public Element(IElement innerElement)
             {
                 this.innerElement = innerElement;

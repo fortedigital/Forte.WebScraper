@@ -1,0 +1,27 @@
+{
+	"SectionPage": {
+		"test": "doc.Css(\"#main .linked-pages-container\").Exists",
+		"pageLinks":{
+			"articles": "#main .linked-pages-container li a"
+		},
+		"properties": {
+			"title": "innertext:.entry-title",
+			"intro": "innertext:.ingress"
+		}
+	},
+	"TOCPage": {
+		"test": "doc.Css(\"body.page-parent\").Exists",
+		"pageLinks": {
+			"articles": ".main ul > li a"
+		},
+		"properties": {
+			"title": "innertext:.entry-title"
+		}
+	},
+	"ArticlePage": {
+		"test": "doc.Css(\"article[role='article']\").Exists",
+		"properties": {
+			"title": "innertext:.entry-title"
+		}
+	}
+}
